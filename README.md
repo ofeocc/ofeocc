@@ -28,14 +28,6 @@
 
 ## 📊 GitHub 数据
 
-<table>
-<tr><td>
-  <img src="https://github-readme-stats.vercel.app/api?username=ofeocc&show_icons=true&theme=dark&hide_border=true" alt="stats" />
-</td><td>
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=ofeocc&layout=compact&langs_count=8&theme=dark&hide_border=true" alt="langs" />
-</td></tr>
-</table>
-
 <p align="center">
   <img src="metrics.svg" alt="metrics" align="center" width="100%" />
 </p>
