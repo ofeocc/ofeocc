@@ -37,5 +37,9 @@
 </table>
 
 <p align="center">
+  <img src="metrics.svg" alt="metrics" align="center" width="100%" />
+</p>
+
+<p align="center">
   <a href="https://github.com/ofeocc"><img src="https://komarev.com/ghpvc/?username=ofeocc&color=F5C518" alt="views"/></a>
 </p>
