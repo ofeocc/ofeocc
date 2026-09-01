@@ -1,53 +1,42 @@
 name: metrics
 
+# 完全对照 H2O-ME 的真实配置：
+#  - plugin_isocalendar  => 底部那张 3D 等距立体贡献图（就是你要的「3D」）
+#  - token 用自动注入的 secrets.GITHUB_TOKEN   => 你不需要手动建任何 secret
+#  - committer_message 带 [skip ci]  => 自动提交 SVG 不会触发死循环
 on:
-  # 每次 push / 每天定时刷新动画指标
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch: {}
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  github-metrics:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:
-      # 1) 拉取当前仓库内容（README 所在）
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: lowlighter/metrics@latest
         with:
-          fetch-depth: 0
-
-      # 2) 用 lowlighter/metrics 生成动画 metrics.svg
-      #    METRICS_TOKEN 需要在 仓库 Settings -> Secrets and variables -> Actions -> New repository secret 里填入
-      #    值 = 一个 classic PAT（勾选 repo / public_repo 权限）。
-      - name: Generate metrics
-        uses: lowlighter/metrics@latest
-        with:
-          token: ${{ secrets.METRICS_TOKEN }}
           filename: metrics.svg
-          base: header
-          base_repositories: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: header, activity, community, repositories, metadata
+          base_indepth: yes
+          repositories_forks: yes
           plugin_languages: yes
-          plugin_languages_indepth: no
-          plugin_languages_details: bytes-size, percentage
-          plugin_languages_skipped: README
-          plugin_calendar: yes
-          plugin_calendar_limit: 5
-          plugin_stargazers: yes
-          plugin_stargazers_when: true
-          plugin_activity: yes
-          plugin_activity_limit: 5
-          plugin_activity_days: 14
-          plugin_activity_filter: all
-
-      # 3) 把生成的 metrics.svg 提交回仓库，让 README 能引用
-      - name: Commit generated metrics
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add metrics.svg
-          git commit -m "chore: refresh metrics.svg" || echo "no changes to commit"
-          git push && echo "pushed"
+          plugin_languages_indepth: yes
+          plugin_languages_other: no
+          plugin_languages_analysis_timeout: 60
+          plugin_languages_analysis_timeout_repositories: 15
+          plugin_languages_details: lines, percentage
+          plugin_languages_limit: 8
+          plugin_isocalendar: yes
+          plugin_isocalendar_duration: full-year
+          config_display: large
+          committer_message: "chore: update metrics [skip ci]"
